@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ejecutor y Verificador Python · EETP N° 468</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Skulpt: Motor Python en el navegador -->
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            inst: {
+              900: '#0f294a',
+              800: '#163b6b',
+              700: '#1d4ed8',
+              100: '#dbeafe',
+              50: '#eff6ff',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-blue-200 selection:text-blue-900">
+
+  <!-- Encabezado Institucional -->
+  <header class="bg-inst-900 text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-2xl mx-auto px-4 py-3.5 flex items-center justify-between gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-200 border border-blue-400/30">
+            EETP N° 468 · 3.º Año Software
+          </span>
+        </div>
+        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight mt-1 leading-tight">
+          Ejecutor y Verificador Python
+        </h1>
+      </div>
+      <div class="text-right shrink-0">
+        <span class="block text-[11px] text-blue-200 font-medium">Prof. Diego Rodríguez</span>
+        <span id="skulpt-status-badge" class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Motor listo
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal Mobile-First -->
+  <main class="flex-1 w-full max-w-2xl mx-auto px-3 sm:px-4 py-4 space-y-4">
+
+    <!-- Instrucciones Colapsables -->
+    <details class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group">
+      <summary class="px-4 py-3 flex items-center justify-between cursor-pointer select-none list-none hover:bg-slate-50 transition-colors">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-xl bg-inst-50 text-inst-700 flex items-center justify-center font-bold text-sm border border-inst-100">?</span>
+          <span class="font-semibold text-sm text-slate-800">¿Cómo usar esta plataforma desde el celular?</span>
+        </div>
+        <svg class="w-5 h-5 text-slate-400 transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </summary>
+      <div class="px-4 pb-4 pt-1 border-t border-slate-100 text-sm text-slate-600 space-y-2.5">
+        <div class="flex items-start gap-2.5">
+          <span class="w-5 h-5 rounded-full bg-inst-900 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+          <p><strong class="text-slate-800">Descargá el <code class="bg-slate-100 px-1 py-0.5 rounded text-xs font-mono">.py</code> de la IA:</strong> Guardá el archivo generado por DeepSeek o Gemini en tu teléfono (o copiá el código).</p>
+        </div>
+        <div class="flex items-start gap-2.5">
+          <span class="w-5 h-5 rounded-full bg-inst-900 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+          <p><strong class="text-slate-800">Subilo acá:</strong> Tocá en <em>"Subir archivo .py"</em> y elegí tu archivo desde la carpeta Descargas de tu celular.</p>
+        </div>
+        <div class="flex items-start gap-2.5">
+          <span class="w-5 h-5 rounded-full bg-inst-900 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+          <p><strong class="text-slate-800">Ejecutá y verificá:</strong> Tocá <em>"▶ Ejecutar y Verificar"</em>, respondé los datos que pida la consola y revisá que los 5 puntos queden en verde.</p>
+        </div>
+      </div>
+    </details>
+
+    <!-- Tarjeta 1: Carga de Archivo .py y Código -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3.5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-inst-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          1. Archivo o Código Python
+        </h2>
+        <button id="btn-load-example" type="button" class="text-xs font-semibold text-inst-700 bg-inst-50 hover:bg-inst-100 active:scale-[0.98] px-3 py-1.5 rounded-xl border border-inst-100 transition-all">
+          Cargar ejemplo del ejercicio
+        </button>
+      </div>
+
+      <!-- Zona de subida táctil -->
+      <div id="drop-zone" class="relative border-2 border-dashed border-slate-300 hover:border-inst-700 bg-slate-50/70 rounded-2xl p-4 text-center transition-colors">
+        <input id="file-input" type="file" accept=".py,.txt" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" aria-label="Subir archivo Python .py">
+        <div id="upload-empty-state" class="space-y-1.5 pointer-events-none">
+          <div class="w-10 h-10 rounded-2xl bg-white shadow-sm border border-slate-200 mx-auto flex items-center justify-center text-inst-700">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+          </div>
+          <p class="text-sm font-bold text-slate-800">Subir archivo <span class="font-mono text-inst-700">.py</span></p>
+          <p class="text-xs text-slate-500">Tocá acá para seleccionar el archivo desde tu celular</p>
+        </div>
+
+        <!-- Info del archivo cargado -->
+        <div id="upload-loaded-state" class="hidden relative z-20 flex items-center justify-between gap-2 bg-white p-3 rounded-xl border border-emerald-200 shadow-sm text-left">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 font-mono font-bold text-xs border border-emerald-200">
+              .PY
+            </div>
+            <div class="min-w-0">
+              <p id="file-name-display" class="text-sm font-bold text-slate-800 truncate">archivo.py</p>
+              <p id="file-meta-display" class="text-xs text-slate-500">0 bytes · Listo para ejecutar</p>
+            </div>
+          </div>
+          <button id="btn-clear-file" type="button" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 shrink-0 transition-colors">
+            Quitar
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor de código con numeración de líneas -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+          <span>Vista previa / Editor de código:</span>
+          <span id="line-count-label" class="font-mono">1 línea</span>
+        </div>
+        <div class="relative flex rounded-2xl border border-slate-300 bg-slate-900 text-slate-100 overflow-hidden focus-within:ring-2 focus-within:ring-inst-700 focus-within:border-inst-700">
+          <div id="line-numbers" aria-hidden="true" class="py-3 px-2.5 bg-slate-950/70 text-slate-500 font-mono text-xs sm:text-sm leading-6 text-right select-none border-r border-slate-800 shrink-0">1</div>
+          <textarea id="code-editor" rows="10" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="# Pegá tu código Python acá o subí un archivo .py arriba..." class="w-full py-3 px-3 bg-transparent text-slate-100 font-mono text-xs sm:text-sm leading-6 resize-y focus:outline-none overflow-x-auto whitespace-pre"></textarea>
+        </div>
+      </div>
+
+      <!-- Botones de Acción Principales -->
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-1">
+        <button id="btn-run" type="button" class="sm:col-span-7 w-full py-3.5 px-4 rounded-2xl bg-inst-700 hover:bg-blue-700 active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 transition-all">
+          <span>▶ Ejecutar y Verificar</span>
+        </button>
+        <button id="btn-stop" type="button" disabled class="sm:col-span-2 w-full py-3 px-3 rounded-2xl bg-rose-600 hover:bg-rose-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all">
+          <span>■ Detener</span>
+        </button>
+        <button id="btn-clear-console" type="button" class="sm:col-span-3 w-full py-3 px-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+          <span>Limpiar consola</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Tarjeta 2: Consola Interactiva Python -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          2. Consola de Ejecución
+        </h2>
+        <span id="console-state-pill" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+          En espera
+        </span>
+      </div>
+
+      <!-- Área de salida de consola -->
+      <div id="console-output" class="bg-slate-950 text-slate-100 rounded-2xl p-3.5 font-mono text-xs sm:text-sm min-h-[150px] max-h-[320px] overflow-y-auto space-y-1.5 border border-slate-800 shadow-inner">
+        <div class="text-slate-400 italic">Tocá "▶ Ejecutar y Verificar" para correr tu programa Python...</div>
+      </div>
+
+      <!-- Caja de entrada interactiva para input() -->
+      <div id="interactive-input-box" class="hidden rounded-2xl bg-amber-50 border-2 border-amber-400 p-3 space-y-2 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-bold text-amber-900">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+          <span>El programa solicita un dato (<code class="font-mono bg-amber-100 px-1 rounded">input()</code>):</span>
+        </div>
+        <p id="interactive-prompt-label" class="text-sm font-semibold text-slate-900 font-mono bg-white px-3 py-2 rounded-xl border border-amber-200">
+          Ingresa un valor:
+        </p>
+        <form id="interactive-input-form" class="flex gap-2">
+          <input id="interactive-input-field" type="text" autocomplete="off" placeholder="Escribí tu respuesta acá..." class="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-amber-300 bg-white text-slate-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-[0.98] text-white font-bold text-sm shrink-0 shadow-sm transition-all">
+            Enviar
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Tarjeta 3: Panel de Verificación Pedagógica Automática -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-inst-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          3. Verificación Pedagógica Automática
+        </h2>
+        <span id="overall-badge" class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-slate-100 text-slate-600 border border-slate-200">
+          Pendiente de prueba
+        </span>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs font-semibold text-slate-600">
+          <span>Progreso de verificación</span>
+          <span id="progress-text">0 / 5 criterios cumplidos</span>
+        </div>
+        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+          <div id="progress-bar" class="h-full bg-inst-700 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Lista de 5 criterios -->
+      <ul class="space-y-2 text-sm">
+        <li id="check-1" class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="check-icon w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-800 truncate">Archivo / Código cargado</p>
+              <p id="check-1-sub" class="text-xs text-slate-500 truncate">Esperando código Python...</p>
+            </div>
+          </div>
+          <span class="check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 text-slate-600 shrink-0">Pendiente</span>
+        </li>
+
+        <li id="check-2" class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="check-icon w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-800 truncate">Estructura repetitiva (<code class="font-mono text-xs">for</code> / <code class="font-mono text-xs">while</code>)</p>
+              <p id="check-2-sub" class="text-xs text-slate-500 truncate">Detecta ciclos para carga o proceso</p>
+            </div>
+          </div>
+          <span class="check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 text-slate-600 shrink-0">Pendiente</span>
+        </li>
+
+        <li id="check-3" class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="check-icon w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-800 truncate">Entrada de datos (<code class="font-mono text-xs">input()</code>)</p>
+              <p id="check-3-sub" class="text-xs text-slate-500 truncate">Solicita datos interactivos al usuario</p>
+            </div>
+          </div>
+          <span class="check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 text-slate-600 shrink-0">Pendiente</span>
+        </li>
+
+        <li id="check-4" class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="check-icon w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-800 truncate">Estructura condicional (<code class="font-mono text-xs">if</code> / <code class="font-mono text-xs">else</code>)</p>
+              <p id="check-4-sub" class="text-xs text-slate-500 truncate">Evalúa condición lógica del resultado</p>
+            </div>
+          </div>
+          <span class="check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 text-slate-600 shrink-0">Pendiente</span>
+        </li>
+
+        <li id="check-5" class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="check-icon w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">5</span>
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-800 truncate">Ejecución sin errores</p>
+              <p id="check-5-sub" class="text-xs text-slate-500 truncate">Finaliza correctamente sin excepciones</p>
+            </div>
+          </div>
+          <span class="check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 text-slate-600 shrink-0">Pendiente</span>
+        </li>
+      </ul>
+
+      <!-- Sección Comprobante para Classroom -->
+      <div class="pt-3 border-t border-slate-200 space-y-3">
+        <div>
+          <label for="student-name" class="block text-xs font-bold text-slate-700 mb-1">
+            Nombre y Apellido del Estudiante (opcional para el comprobante):
+          </label>
+          <input id="student-name" type="text" placeholder="Ej. Valentina Gómez" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-inst-700">
+        </div>
+        <button id="btn-download-report" type="button" class="w-full py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Descargar Comprobante / Reporte para Classroom</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Pie de página institucional -->
+  <footer class="max-w-2xl w-full mx-auto px-4 py-4 text-center text-xs text-slate-500">
+    EETP N° 468 · 3.º Año de Software · Prof. Diego Rodríguez
+  </footer>
+
+  <!-- Toast de notificación (reemplaza alert) -->
+  <div id="toast-notification" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden max-w-[92vw] px-4 py-2.5 rounded-2xl bg-slate-900 text-white text-xs sm:text-sm font-medium shadow-lg border border-slate-700 transition-opacity"></div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURACIÓN Y ESTADO DE LA APLICACIÓN
+    // =========================================================================
+    const EXAMPLE_PYTHON_CODE = `suma = 0
+
+for i in range(3):
+    nota = float(input("Ingresa la calificación " + str(i + 1) + ": "))
+    suma = suma + nota
+
+promedio = suma / 3
+
+print("Tu nota final es:", promedio)
+
+if promedio >= 6:
+    print("¡Aprobaste!")
+else:
+    print("Debes recuperar.")`;
+
+    const appState = {
+      uploadedFileName: null,
+      uploadedFileSize: 0,
+      isRunning: false,
+      stopRequested: false,
+      pendingInputResolver: null,
+      pendingInputRejecter: null,
+      consoleLogs: [],
+      executionStatus: 'pending', // 'pending' | 'running' | 'success' | 'error' | 'stopped'
+      checks: {
+        hasCode: false,
+        hasLoop: false,
+        hasInput: false,
+        hasCondition: false,
+        executionOk: false
+      }
+    };
+
+    // Referencias al DOM
+    const el = {
+      fileInput: document.getElementById('file-input'),
+      uploadEmptyState: document.getElementById('upload-empty-state'),
+      uploadLoadedState: document.getElementById('upload-loaded-state'),
+      fileNameDisplay: document.getElementById('file-name-display'),
+      fileMetaDisplay: document.getElementById('file-meta-display'),
+      btnClearFile: document.getElementById('btn-clear-file'),
+      btnLoadExample: document.getElementById('btn-load-example'),
+      codeEditor: document.getElementById('code-editor'),
+      lineNumbers: document.getElementById('line-numbers'),
+      lineCountLabel: document.getElementById('line-count-label'),
+      btnRun: document.getElementById('btn-run'),
+      btnStop: document.getElementById('btn-stop'),
+      btnClearConsole: document.getElementById('btn-clear-console'),
+      consoleOutput: document.getElementById('console-output'),
+      consoleStatePill: document.getElementById('console-state-pill'),
+      interactiveInputBox: document.getElementById('interactive-input-box'),
+      interactivePromptLabel: document.getElementById('interactive-prompt-label'),
+      interactiveInputForm: document.getElementById('interactive-input-form'),
+      interactiveInputField: document.getElementById('interactive-input-field'),
+      overallBadge: document.getElementById('overall-badge'),
+      progressText: document.getElementById('progress-text'),
+      progressBar: document.getElementById('progress-bar'),
+      studentName: document.getElementById('student-name'),
+      btnDownloadReport: document.getElementById('btn-download-report'),
+      toast: document.getElementById('toast-notification')
+    };
+
+    // =========================================================================
+    // UTILIDADES DE INTERFAZ (TOAST, NUMERACIÓN DE LÍNEAS, CONSOLA)
+    // =========================================================================
+    let toastTimer = null;
+    function showToast(message) {
+      el.toast.textContent = message;
+      el.toast.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.toast.classList.add('hidden');
+      }, 3200);
+    }
+
+    function updateLineNumbers() {
+      const lines = el.codeEditor.value.split('\n').length;
+      const numbers = Array.from({ length: lines }, (_, idx) => idx + 1).join('\n');
+      el.lineNumbers.textContent = numbers;
+      el.lineCountLabel.textContent = lines === 1 ? '1 línea' : `${lines} líneas`;
+    }
+
+    el.codeEditor.addEventListener('scroll', () => {
+      el.lineNumbers.scrollTop = el.codeEditor.scrollTop;
+    });
+
+    el.codeEditor.addEventListener('input', () => {
+      updateLineNumbers();
+      if (appState.executionStatus === 'success' || appState.executionStatus === 'error') {
+        appState.executionStatus = 'pending';
+        appState.checks.executionOk = false;
+      }
+      analyzeCodeStatic();
+    });
+
+    // Soporte de tecla Tab dentro del editor
+    el.codeEditor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = el.codeEditor.selectionStart;
+        const end = el.codeEditor.selectionEnd;
+        el.codeEditor.value = el.codeEditor.value.substring(0, start) + '    ' + el.codeEditor.value.substring(end);
+        el.codeEditor.selectionStart = el.codeEditor.selectionEnd = start + 4;
+        updateLineNumbers();
+      }
+    });
+
+    function clearConsole() {
+      appState.consoleLogs = [];
+      el.consoleOutput.innerHTML = '<div class="text-slate-400 italic">Consola limpia. Tocá "▶ Ejecutar y Verificar" para iniciar.</div>';
+      setConsolePill('En espera', 'neutral');
+    }
+
+    function appendConsoleLine(text, type = 'stdout') {
+      if (appState.consoleLogs.length === 0) {
+        el.consoleOutput.innerHTML = '';
+      }
+      appState.consoleLogs.push({ type, text });
+
+      const div = document.createElement('div');
+      div.className = 'whitespace-pre-wrap break-words leading-relaxed';
+
+      if (type === 'system') {
+        div.className += ' text-blue-400 text-xs';
+        div.textContent = `» ${text}`;
+      } else if (type === 'prompt') {
+        div.className += ' text-amber-300 font-semibold';
+        div.textContent = `? ${text}`;
+      } else if (type === 'user-input') {
+        div.className += ' text-emerald-300 pl-3 border-l-2 border-emerald-500';
+        div.textContent = `↳ ${text}`;
+      } else if (type === 'error') {
+        div.className += ' text-rose-300 bg-rose-950/60 border border-rose-800/80 rounded-xl p-2.5 mt-1';
+        div.textContent = text;
+      } else if (type === 'success') {
+        div.className += ' text-emerald-400 text-xs font-semibold pt-1';
+        div.textContent = `✓ ${text}`;
+      } else {
+        // stdout estándar
+        div.className += ' text-slate-100';
+        div.textContent = text;
+      }
+
+      el.consoleOutput.appendChild(div);
+      el.consoleOutput.scrollTop = el.consoleOutput.scrollHeight;
+    }
+
+    function setConsolePill(label, variant) {
+      el.consoleStatePill.textContent = label;
+      el.consoleStatePill.className = 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ';
+      if (variant === 'running') {
+        el.consoleStatePill.className += 'bg-blue-50 text-blue-700 border-blue-200';
+      } else if (variant === 'waiting') {
+        el.consoleStatePill.className += 'bg-amber-50 text-amber-700 border-amber-200';
+      } else if (variant === 'success') {
+        el.consoleStatePill.className += 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      } else if (variant === 'error') {
+        el.consoleStatePill.className += 'bg-rose-50 text-rose-700 border-rose-200';
+      } else {
+        el.consoleStatePill.className += 'bg-slate-100 text-slate-600 border-slate-200';
+      }
+    }
+
+    // =========================================================================
+    // CARGA DE ARCHIVO .PY Y EJEMPLO
+    // =========================================================================
+    function formatBytes(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+
+    el.fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        appState.uploadedFileName = file.name;
+        appState.uploadedFileSize = file.size;
+        appState.executionStatus = 'pending';
+        appState.checks.executionOk = false;
+
+        el.codeEditor.value = event.target.result;
+        updateLineNumbers();
+
+        el.fileNameDisplay.textContent = file.name;
+        el.fileMetaDisplay.textContent = `${formatBytes(file.size)} · Cargado correctamente`;
+        el.uploadEmptyState.classList.add('hidden');
+        el.uploadLoadedState.classList.remove('hidden');
+
+        analyzeCodeStatic();
+        showToast(`Archivo "${file.name}" cargado`);
+      };
+      reader.onerror = () => {
+        showToast('No se pudo leer el archivo seleccionado.');
+      };
+      reader.readAsText(file);
+    });
+
+    el.btnClearFile.addEventListener('click', () => {
+      appState.uploadedFileName = null;
+      appState.uploadedFileSize = 0;
+      appState.executionStatus = 'pending';
+      appState.checks.executionOk = false;
+      el.fileInput.value = '';
+      el.codeEditor.value = '';
+      updateLineNumbers();
+      el.uploadLoadedState.classList.add('hidden');
+      el.uploadEmptyState.classList.remove('hidden');
+      analyzeCodeStatic();
+      showToast('Archivo quitado');
+    });
+
+    el.btnLoadExample.addEventListener('click', () => {
+      appState.uploadedFileName = 'ejemplo_promedio_notas.py';
+      appState.uploadedFileSize = new Blob([EXAMPLE_PYTHON_CODE]).size;
+      appState.executionStatus = 'pending';
+      appState.checks.executionOk = false;
+
+      el.codeEditor.value = EXAMPLE_PYTHON_CODE;
+      updateLineNumbers();
+
+      el.fileNameDisplay.textContent = appState.uploadedFileName;
+      el.fileMetaDisplay.textContent = `${formatBytes(appState.uploadedFileSize)} · Ejemplo precargado`;
+      el.uploadEmptyState.classList.add('hidden');
+      el.uploadLoadedState.classList.remove('hidden');
+
+      analyzeCodeStatic();
+      showToast('Ejemplo de promedio cargado');
+    });
+
+    // =========================================================================
+    // ANÁLISIS PEDAGÓGICO ESTÁTICO Y ACTUALIZACIÓN DE CHECKLIST
+    // =========================================================================
+    function stripPythonCommentsAndStrings(code) {
+      // Elimina comentarios (#...) para evitar falsos positivos en palabras clave comentadas
+      return code
+        .split('\n')
+        .map(line => {
+          const hashIdx = line.indexOf('#');
+          return hashIdx !== -1 ? line.slice(0, hashIdx) : line;
+        })
+        .join('\n');
+    }
+
+    function analyzeCodeStatic() {
+      const rawCode = el.codeEditor.value;
+      const cleanCode = stripPythonCommentsAndStrings(rawCode).trim();
+
+      appState.checks.hasCode = cleanCode.length > 0;
+      appState.checks.hasLoop = /\b(for|while)\b/.test(cleanCode);
+      appState.checks.hasInput = /\binput\s*\(/.test(cleanCode);
+      appState.checks.hasCondition = /\bif\b/.test(cleanCode);
+
+      renderVerificationBoard();
+    }
+
+    function updateCheckItem(itemId, status, subText) {
+      const li = document.getElementById(itemId);
+      const icon = li.querySelector('.check-icon');
+      const badge = li.querySelector('.check-status');
+      const sub = document.getElementById(`${itemId}-sub`);
+
+      if (subText) sub.textContent = subText;
+
+      if (status === 'pass') {
+        li.className = 'flex items-center justify-between gap-3 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200 transition-colors';
+        icon.className = 'check-icon w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0';
+        icon.textContent = '✓';
+        badge.className = 'check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 shrink-0';
+        badge.textContent = 'Cumplido';
+      } else if (status === 'error') {
+        li.className = 'flex items-center justify-between gap-3 p-2.5 rounded-xl bg-rose-50/70 border border-rose-200 transition-colors';
+        icon.className = 'check-icon w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shrink-0';
+        icon.textContent = '✕';
+        badge.className = 'check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 shrink-0';
+        badge.textContent = 'Revisar';
+      } else {
+        li.className = 'flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200 transition-colors';
+        icon.className = 'check-icon w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0';
+        icon.textContent = itemId.split('-')[1];
+        badge.className = 'check-status text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 text-slate-600 shrink-0';
+        badge.textContent = 'Pendiente';
+      }
+    }
+
+    function renderVerificationBoard() {
+      const c = appState.checks;
+
+      // 1. Archivo / Código cargado
+      if (c.hasCode) {
+        const label = appState.uploadedFileName
+          ? `Archivo: ${appState.uploadedFileName}`
+          : 'Código ingresado en el editor';
+        updateCheckItem('check-1', 'pass', label);
+      } else {
+        updateCheckItem('check-1', 'pending', 'Esperando código Python...');
+      }
+
+      // 2. Bucle
+      updateCheckItem(
+        'check-2',
+        c.hasLoop ? 'pass' : 'pending',
+        c.hasLoop ? 'Estructura repetitiva detectada' : 'No se detectó bucle for/while aún'
+      );
+
+      // 3. input()
+      updateCheckItem(
+        'check-3',
+        c.hasInput ? 'pass' : 'pending',
+        c.hasInput ? 'Lectura de datos con input() detectada' : 'No se detectó uso de input() aún'
+      );
+
+      // 4. Condicional
+      updateCheckItem(
+        'check-4',
+        c.hasCondition ? 'pass' : 'pending',
+        c.hasCondition ? 'Evaluación condicional if/else detectada' : 'No se detectó condicional if aún'
+      );
+
+      // 5. Ejecución sin errores
+      if (appState.executionStatus === 'success') {
+        updateCheckItem('check-5', 'pass', 'Programa ejecutado y finalizado con éxito');
+      } else if (appState.executionStatus === 'error') {
+        updateCheckItem('check-5', 'error', 'Se produjo un error al ejecutar el código');
+      } else if (appState.executionStatus === 'stopped') {
+        updateCheckItem('check-5', 'error', 'Ejecución detenida por el usuario');
+      } else {
+        updateCheckItem('check-5', 'pending', 'Presioná "Ejecutar y Verificar" para probar');
+      }
+
+      // Cálculo de progreso
+      const passedCount = Object.values(c).filter(Boolean).length;
+      const pct = Math.round((passedCount / 5) * 100);
+      el.progressText.textContent = `${passedCount} / 5 criterios cumplidos`;
+      el.progressBar.style.width = `${pct}%`;
+
+      if (passedCount === 5 && appState.executionStatus === 'success') {
+        el.progressBar.className = 'h-full bg-emerald-600 rounded-full transition-all duration-300';
+        el.overallBadge.className = 'px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-300';
+        el.overallBadge.textContent = '✓ APROBADO / VERIFICADO';
+      } else if (appState.executionStatus === 'error') {
+        el.progressBar.className = 'h-full bg-rose-500 rounded-full transition-all duration-300';
+        el.overallBadge.className = 'px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-rose-100 text-rose-800 border border-rose-300';
+        el.overallBadge.textContent = 'Con errores de ejecución';
+      } else {
+        el.progressBar.className = 'h-full bg-inst-700 rounded-full transition-all duration-300';
+        el.overallBadge.className = 'px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-slate-100 text-slate-600 border border-slate-200';
+        el.overallBadge.textContent = passedCount > 0 ? 'En progreso' : 'Pendiente de prueba';
+      }
+    }
+
+    // =========================================================================
+    // MOTOR PYTHON (SKULPT) CON INPUT INTERACTIVO INTEGRADO EN CONSOLA
+    // =========================================================================
+    let stdoutBuffer = '';
+
+    function handleSkulptOutput(text) {
+      stdoutBuffer += text;
+      if (stdoutBuffer.includes('\n')) {
+        const parts = stdoutBuffer.split('\n');
+        stdoutBuffer = parts.pop();
+        parts.forEach(line => appendConsoleLine(line, 'stdout'));
+      }
+    }
+
+    function flushStdoutBuffer() {
+      if (stdoutBuffer.length > 0) {
+        appendConsoleLine(stdoutBuffer, 'stdout');
+        stdoutBuffer = '';
+      }
+    }
+
+    function handleSkulptInput(promptText) {
+      flushStdoutBuffer();
+      const cleanPrompt = promptText || 'Ingresa un valor:';
+      appendConsoleLine(cleanPrompt, 'prompt');
+      setConsolePill('Esperando dato...', 'waiting');
+
+      el.interactivePromptLabel.textContent = cleanPrompt;
+      el.interactiveInputField.value = '';
+      el.interactiveInputBox.classList.remove('hidden');
+
+      setTimeout(() => {
+        el.interactiveInputField.focus();
+      }, 60);
+
+      return new Promise((resolve, reject) => {
+        appState.pendingInputResolver = resolve;
+        appState.pendingInputRejecter = reject;
+      });
+    }
+
+    el.interactiveInputForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!appState.pendingInputResolver) return;
+
+      const userValue = el.interactiveInputField.value;
+      const resolver = appState.pendingInputResolver;
+
+      appState.pendingInputResolver = null;
+      appState.pendingInputRejecter = null;
+
+      el.interactiveInputBox.classList.add('hidden');
+      appendConsoleLine(userValue === '' ? '(vacío)' : userValue, 'user-input');
+      setConsolePill('Ejecutando...', 'running');
+
+      resolver(userValue);
+    });
+
+    function formatFriendlyPythonError(err) {
+      const raw = err.toString();
+      let tip = '';
+
+      if (raw.includes('SyntaxError')) {
+        tip = '💡 Consejo: Revisá que no falten dos puntos (:) al final de for, if o else, ni paréntesis sin cerrar.';
+      } else if (raw.includes('IndentationError')) {
+        tip = '💡 Consejo: Revisá los espacios al inicio de cada línea dentro del bucle for o del if/else.';
+      } else if (raw.includes('ValueError')) {
+        tip = '💡 Consejo: Ingresaste un texto cuando el programa esperaba un número (por ejemplo, para float() o int()).';
+      } else if (raw.includes('NameError')) {
+        tip = '💡 Consejo: Estás usando una variable que no fue definida antes o tiene una letra distinta.';
+      } else if (raw.includes('ZeroDivisionError')) {
+        tip = '💡 Consejo: El programa intentó dividir por cero.';
+      } else if (raw.includes('TimeLimitError')) {
+        tip = '💡 Consejo: El programa tardó demasiado (posible bucle infinito).';
+      }
+
+      return tip ? `❌ Error de Python:\n${raw}\n\n${tip}` : `❌ Error de Python:\n${raw}`;
+    }
+
+    function builtinRead(x) {
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles['files'][x] === undefined) {
+        throw new Error(`Archivo interno no encontrado: '${x}'`);
+      }
+      return Sk.builtinFiles['files'][x];
+    }
+
+    async function runPythonCode() {
+      if (appState.isRunning) return;
+
+      const code = el.codeEditor.value;
+      if (!code.trim()) {
+        showToast('Subí un archivo .py o pegá código antes de ejecutar.');
+        return;
+      }
+
+      if (typeof Sk === 'undefined') {
+        showToast('El motor Python aún se está cargando. Verificá tu conexión.');
+        return;
+      }
+
+      // Reiniciar estado de ejecución
+      appState.isRunning = true;
+      appState.stopRequested = false;
+      appState.executionStatus = 'running';
+      appState.checks.executionOk = false;
+      stdoutBuffer = '';
+
+      el.btnRun.disabled = true;
+      el.btnStop.disabled = false;
+      el.interactiveInputBox.classList.add('hidden');
+      el.consoleOutput.innerHTML = '';
+
+      analyzeCodeStatic();
+      setConsolePill('Ejecutando...', 'running');
+      appendConsoleLine(`Iniciando ejecución${appState.uploadedFileName ? ` de "${appState.uploadedFileName}"` : ''}...`, 'system');
+
+      Sk.configure({
+        output: handleSkulptOutput,
+        read: builtinRead,
+        inputfun: handleSkulptInput,
+        inputfunTakesPrompt: true,
+        __future__: Sk.python3,
+        execLimit: 60000 // 60 segundos incluyendo espera de interacción
+      });
+
+      try {
+        await Sk.misceval.asyncToPromise(() => {
+          return Sk.importMainWithBody('<stdin>', false, code, true);
+        });
+
+        flushStdoutBuffer();
+        if (!appState.stopRequested) {
+          appState.executionStatus = 'success';
+          appState.checks.executionOk = true;
+          setConsolePill('Completado', 'success');
+          appendConsoleLine('Ejecución finalizada correctamente sin errores.', 'success');
+        }
+      } catch (err) {
+        flushStdoutBuffer();
+        if (appState.stopRequested) {
+          appState.executionStatus = 'stopped';
+          setConsolePill('Detenido', 'error');
+          appendConsoleLine('Ejecución detenida manualmente.', 'system');
+        } else {
+          appState.executionStatus = 'error';
+          appState.checks.executionOk = false;
+          setConsolePill('Error', 'error');
+          appendConsoleLine(formatFriendlyPythonError(err), 'error');
+        }
+      } finally {
+        appState.isRunning = false;
+        appState.pendingInputResolver = null;
+        appState.pendingInputRejecter = null;
+        el.btnRun.disabled = false;
+        el.btnStop.disabled = true;
+        el.interactiveInputBox.classList.add('hidden');
+        renderVerificationBoard();
+      }
+    }
+
+    function stopPythonExecution() {
+      if (!appState.isRunning) return;
+      appState.stopRequested = true;
+      Sk.execLimit = 1; // Fuerza interrupción inmediata en Skulpt
+      if (appState.pendingInputRejecter) {
+        appState.pendingInputRejecter(new Error('Ejecución detenida por el usuario'));
+      }
+    }
+
+    el.btnRun.addEventListener('click', runPythonCode);
+    el.btnStop.addEventListener('click', stopPythonExecution);
+    el.btnClearConsole.addEventListener('click', () => {
+      if (appState.isRunning) {
+        showToast('Detené la ejecución antes de limpiar la consola.');
+        return;
+      }
+      clearConsole();
+    });
+
+    // =========================================================================
+    // GENERACIÓN Y DESCARGA DE COMPROBANTE PARA CLASSROOM
+    // =========================================================================
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    el.btnDownloadReport.addEventListener('click', () => {
+      const code = el.codeEditor.value.trim();
+      if (!code) {
+        showToast('Cargá y ejecutá un código antes de descargar el comprobante.');
+        return;
+      }
+
+      const student = el.studentName.value.trim() || 'Estudiante (sin especificar)';
+      const fileName = appState.uploadedFileName || 'codigo_en_editor.py';
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-AR') + ' ' + now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      const passedCount = Object.values(appState.checks).filter(Boolean).length;
+      const isApproved = passedCount === 5 && appState.executionStatus === 'success';
+
+      const consoleText = appState.consoleLogs.length
+        ? appState.consoleLogs.map(item => {
+            if (item.type === 'prompt') return `? ${item.text}`;
+            if (item.type === 'user-input') return `  -> ${item.text}`;
+            return item.text;
+          }).join('\n')
+        : '(Sin salida registrada)';
+
+      const checkRows = [
+        ['1. Archivo / Código cargado', appState.checks.hasCode],
+        ['2. Estructura repetitiva (for / while)', appState.checks.hasLoop],
+        ['3. Entrada de datos (input())', appState.checks.hasInput],
+        ['4. Estructura condicional (if / else)', appState.checks.hasCondition],
+        ['5. Ejecución sin errores', appState.checks.executionOk]
+      ].map(([label, ok]) => `
+        <tr>
+          <td style="padding:8px;border:1px solid #cbd5e1;">${escapeHtml(label)}</td>
+          <td style="padding:8px;border:1px solid #cbd5e1;font-weight:bold;color:${ok ? '#15803d' : '#b91c1c'};">
+            ${ok ? '✓ CUMPLIDO' : '✕ PENDIENTE'}
+          </td>
+        </tr>
+      `).join('');
+
+      const reportHtml = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Comprobante de Verificación Python - ${escapeHtml(student)}</title>
+</head>
+<body style="font-family:Arial,Helvetica,sans-serif;color:#1e293b;max-width:760px;margin:24px auto;padding:20px;border:1px solid #cbd5e1;">
+  <div style="border-bottom:3px solid #0f294a;padding-bottom:12px;margin-bottom:16px;">
+    <div style="font-size:12px;font-weight:bold;color:#1d4ed8;text-transform:uppercase;">EETP N° 468 · 3.º Año de Software · Prof. Diego Rodríguez</div>
+    <h1 style="margin:6px 0 0 0;font-size:20px;color:#0f294a;">Comprobante de Ejecución y Verificación Python</h1>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:14px;">
+    <tr>
+      <td style="padding:6px 8px;background:#f8fafc;border:1px solid #cbd5e1;width:30%;"><strong>Estudiante:</strong></td>
+      <td style="padding:6px 8px;border:1px solid #cbd5e1;">${escapeHtml(student)}</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 8px;background:#f8fafc;border:1px solid #cbd5e1;"><strong>Archivo evaluado:</strong></td>
+      <td style="padding:6px 8px;border:1px solid #cbd5e1;font-family:monospace;">${escapeHtml(fileName)}</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 8px;background:#f8fafc;border:1px solid #cbd5e1;"><strong>Fecha y hora:</strong></td>
+      <td style="padding:6px 8px;border:1px solid #cbd5e1;">${escapeHtml(dateStr)}</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 8px;background:#f8fafc;border:1px solid #cbd5e1;"><strong>Resultado general:</strong></td>
+      <td style="padding:6px 8px;border:1px solid #cbd5e1;font-weight:bold;color:${isApproved ? '#15803d' : '#b45309'};">
+        ${isApproved ? 'APROBADO / VERIFICADO (5/5)' : `EN REVISIÓN (${passedCount}/5 criterios)`}
+      </td>
+    </tr>
+  </table>
+
+  <h2 style="font-size:15px;color:#0f294a;margin-bottom:8px;">Detalle de Verificación</h2>
+  <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:13px;">
+    <thead>
+      <tr style="background:#0f294a;color:#ffffff;">
+        <th style="padding:8px;text-align:left;border:1px solid #0f294a;">Criterio Evaluado</th>
+        <th style="padding:8px;text-align:left;border:1px solid #0f294a;width:28%;">Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${checkRows}
+    </tbody>
+  </table>
+
+  <h2 style="font-size:15px;color:#0f294a;margin-bottom:8px;">Código Fuente Python (.py)</h2>
+  <pre style="background:#f8fafc;border:1px solid #cbd5e1;padding:12px;font-family:Consolas,monospace;font-size:13px;white-space:pre-wrap;margin-bottom:18px;">${escapeHtml(code)}</pre>
+
+  <h2 style="font-size:15px;color:#0f294a;margin-bottom:8px;">Salida de Consola Registrada</h2>
+  <pre style="background:#0f172a;color:#f8fafc;padding:12px;font-family:Consolas,monospace;font-size:13px;white-space:pre-wrap;">${escapeHtml(consoleText)}</pre>
+</body>
+</html>`;
+
+      const blob = new Blob([reportHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const safeStudent = student.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'alumno';
+      a.href = url;
+      a.download = `comprobante_python_${safeStudent}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('Comprobante descargado listo para subir a Classroom');
+    });
+
+    // Inicialización al cargar la página
+    updateLineNumbers();
+    analyzeCodeStatic();
+  </script>
+</body>
+</html>
